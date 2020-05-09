@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+  guardian:
+    build: .
+    restart: always
+    environment:
+      SECRET_KEY: 'my-secret-key'
+      DB_HOST: pg
+      DB_NAME: postgres
+      DB_USER: postgres
+      DB_PASS: changeme
+    networks:
+      - default
+      - postgres_db_default
+    labels:
+      - "traefik.http.routers.guardian.rule=Host(`guardian.your-website.com`)"
+      - "traefik.docker.network=traefik_default"
+      - "traefik.enable=true"
+      - "traefik.http.services.guardian.loadbalancer.server.port=8080"
+
+networks:
+  postgres_db_default:
+    external: true

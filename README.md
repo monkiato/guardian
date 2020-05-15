@@ -44,8 +44,3 @@ No extra parameters are required for the docker image, so just run:
 
 TBD
 
-
-## TODO
-
- - improve logging system
- - add unit tests for main endpoints (pkg/routes/auth.go)

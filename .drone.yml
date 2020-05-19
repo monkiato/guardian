@@ -4,36 +4,36 @@ type: docker
 name: default
 
 steps:
-- name: build
-  image: golang:1.13
-  commands:
-  - go build
+  - name: build
+    image: golang:1.13
+    commands:
+      - go build
 
-- name: test
-  image: golang:1.13
-  commands:
-  - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+  - name: test
+    image: golang:1.13
+    commands:
+      - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
 
-- name: coverage
-  image: plugins/codecov
-  settings:
-    token: c6cf2305-8bfc-4787-9ef0-f31d156f9646
-    files:
-      - coverage.txt
+  - name: coverage
+    image: plugins/codecov
+    settings:
+      token: c6cf2305-8bfc-4787-9ef0-f31d156f9646
+      files:
+        - coverage.txt
 
-- name: publish
-  image: plugins/docker
-  settings:
-    repo: docker.pkg.github.com/monkiato/guardian
-    registry: docker.pkg.github.com
-    tags: ${DRONE_TAG}
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
-  when:
-    event:
-      - tag
+  - name: publish
+    image: plugins/docker
+    settings:
+      repo: docker.pkg.github.com/monkiato/guardian/guardian
+      registry: docker.pkg.github.com
+      tags: ${DRONE_TAG}
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      event:
+        - tag
 
 trigger:
   ref:

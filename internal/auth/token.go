@@ -26,7 +26,7 @@ import (
 	if jwtToken.Token == nil || jwtToken.Token.Valid {
 		...
 	}
- */
+*/
 
 // JwtToken wrapper for jwt.Token handling, using a specific secretKey and own User model
 type JwtToken struct {
@@ -45,7 +45,7 @@ func NewJwtToken(user *models.SessionUser, secretKey string, expirationTime int6
 	}
 
 	return &JwtToken{
-		Token: token,
+		Token:     token,
 		secretKey: secretKey,
 	}
 }
@@ -62,7 +62,7 @@ func NewJwtTokenFromString(strToken string, secretKey string) (*JwtToken, error)
 	}
 
 	return &JwtToken{
-		Token: jwtToken,
+		Token:     jwtToken,
 		secretKey: secretKey,
 	}, nil
 }
@@ -75,7 +75,6 @@ func (t *JwtToken) ToString() (string, error) {
 	}
 	return tokenString, nil
 }
-
 
 // GetUser extract user data from token, it unmarshal a SessionUser object
 func (t *JwtToken) GetUser() (*models.SessionUser, error) {

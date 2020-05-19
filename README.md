@@ -1,6 +1,6 @@
 [![Build Status](https://drone.monkiato.com/api/badges/monkiato/guardian/status.svg?ref=refs/heads/master)](https://drone.monkiato.com/monkiato/guardian)
-[![codecov](https://codecov.io/gh/monkiato/guardian/branch/master/graph/badge.svg?token=JA4L3YMUVP)](https://codecov.io/gh/monkiato/guardian)
-
+[![codecov](https://codecov.io/gh/monkiato/guardian/branch/master/graph/badge.svg)](https://codecov.io/gh/monkiato/guardian)
+[![Go Report Card](https://goreportcard.com/badge/github.com/monkiato/guardian)](https://goreportcard.com/report/github.com/monkiato/guardian)
 
 
 # Guardian

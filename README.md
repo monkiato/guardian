@@ -15,17 +15,15 @@ Authentication server in Go created mainly for forward authentication
  
 ## Endpoints
 
-**POST /auth/signin**   send user data for registration
-
-**POST /auth/login**    login with user and password to generate the expected cookie
-
-**POST /auth/login**    logout existing logged-in user (invalidates cookie)
-
-**POST /auth/approve**  approve existing user registration using the approval token provided during the signin
-
-**GET  /auth/validate** validate current cookie and return status 200 if everything is ok
-
-**GET  /auth/me** get logged-in user data, otherwise 403 is returned
+| Type | Path | Description |
+| ---- | ---- | ----------- |
+| POST | /auth/signin | send user data for registration |
+| POST | /auth/login | login with user and password to generate the expected cookie |
+| POST | /auth/logout | logout existing logged-in user (invalidates cookie) |
+| POST | /auth/approve | approve existing user registration using the approval token provided during the signin |
+| POST | /auth/disable | disable existing user, approval token is required to invalidate the user |
+| GET | /auth/validate | validate current cookie and return status 200 if everything is ok |
+| GET | /auth/me | get logged-in user data, otherwise 403 is returned |
  
  # Environment Varaiables
 

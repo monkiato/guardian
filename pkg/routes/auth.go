@@ -63,6 +63,7 @@ func (a *Auth) AddRoutes(router *mux.Router) {
 	router.HandleFunc("/validate", a.validateHandler)
 	router.HandleFunc("/signin", a.signinHandler).Methods(http.MethodPost)
 	router.HandleFunc("/approve", a.approveHandler).Methods(http.MethodPost)
+	router.HandleFunc("/disable", a.disableHandler).Methods(http.MethodPost)
 	router.HandleFunc("/me", a.getMeHandler).Methods(http.MethodGet)
 }
 
@@ -190,6 +191,14 @@ func (a *Auth) logoutHandler(w http.ResponseWriter, req *http.Request) {
 }
 
 func (a *Auth) approveHandler(w http.ResponseWriter, req *http.Request) {
+	a.approve(true, w, req)
+}
+func (a *Auth) disableHandler(w http.ResponseWriter, req *http.Request) {
+	a.approve(false, w, req)
+}
+
+func (a *Auth) approve(value bool, w http.ResponseWriter, req *http.Request) {
+	// TODO: read from json body (as a rest API handling json format only)
 	username := req.FormValue("username")
 	approvalToken := req.FormValue("approval-token")
 	loginUser := models.LoginUser{
@@ -200,31 +209,26 @@ func (a *Auth) approveHandler(w http.ResponseWriter, req *http.Request) {
 	dbUser, err := models.GetUser(a.db, loginUser.Username)
 	if err != nil {
 		fmt.Println("User not found", loginUser.Username, err)
-		a.redirect(w, req, err)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	// check if approval token is matching
 	if dbUser.ApprovalToken != approvalToken {
 		fmt.Println("Approval token doesn't match", approvalToken, dbUser.ApprovalToken)
-		a.redirect(w, req, errors.New("Approval token doesn't match"))
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	// mark user as approved
-	dbUser.Approved = true
+	// mark user as approved or not approved
+	dbUser.Approved = value
 	err = models.UpdateUser(a.db, dbUser)
 	if err != nil {
 		fmt.Println("can't update user", err)
-		a.redirect(w, req, errors.New("can't update user"))
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	// check if there's a redirect to send it to that url directly
-	if redirect, ok := req.URL.Query()["redirect"]; ok && len(redirect) > 0 {
-		http.Redirect(w, req, redirect[0], 301)
-		return
-	}
 	w.WriteHeader(http.StatusOK)
 	return
 }

@@ -1,9 +1,8 @@
+# Guardian
 [![Build Status](https://drone.monkiato.com/api/badges/monkiato/guardian/status.svg?ref=refs/heads/master)](https://drone.monkiato.com/monkiato/guardian)
 [![codecov](https://codecov.io/gh/monkiato/guardian/branch/master/graph/badge.svg)](https://codecov.io/gh/monkiato/guardian)
 [![Go Report Card](https://goreportcard.com/badge/github.com/monkiato/guardian)](https://goreportcard.com/report/github.com/monkiato/guardian)
 
-
-# Guardian
 
 Authentication server in Go created mainly for forward authentication
 
@@ -19,6 +18,8 @@ Authentication server in Go created mainly for forward authentication
 **POST /auth/signin**   send user data for registration
 
 **POST /auth/login**    login with user and password to generate the expected cookie
+
+**POST /auth/login**    logout existing logged-in user (invalidates cookie)
 
 **POST /auth/approve**  approve existing user registration using the approval token provided during the signin
 

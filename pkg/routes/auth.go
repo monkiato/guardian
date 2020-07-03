@@ -59,6 +59,7 @@ func NewAuth(_db *gorm.DB, _logger *log.Logger) *Auth {
 func (a *Auth) AddRoutes(router *mux.Router) {
 	a.logger.Print("adding auth routes...")
 	router.HandleFunc("/login", a.authenticateHandler).Methods(http.MethodPost)
+	router.HandleFunc("/logout", a.logoutHandler).Methods(http.MethodGet)
 	router.HandleFunc("/validate", a.validateHandler)
 	router.HandleFunc("/signin", a.signinHandler).Methods(http.MethodPost)
 	router.HandleFunc("/approve", a.approveHandler).Methods(http.MethodPost)
@@ -170,6 +171,22 @@ func (a *Auth) authenticateHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 	return
+}
+
+func (a *Auth) logoutHandler(w http.ResponseWriter, req *http.Request) {
+	// get cookie
+	cookie, _, err := a.authHandler.ReadCookie(req)
+	if err != nil {
+		fmt.Println("cookie not found")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
+	// invalidate cookie
+	cookie.MaxAge = -1
+	http.SetCookie(w, cookie)
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (a *Auth) approveHandler(w http.ResponseWriter, req *http.Request) {

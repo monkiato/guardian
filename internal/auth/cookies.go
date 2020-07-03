@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gorilla/securecookie"
 	"monkiato/guardian/internal/models"
+
+	"github.com/gorilla/securecookie"
 )
 
 //DefaultCookieName default name used to authentication cookies
@@ -72,10 +73,14 @@ func (handler *Handler) CreateCookie(user *models.SessionUser, expirationTime in
 	}
 
 	cookie := &http.Cookie{
-		Name:   handler.cookieName,
-		Value:  encoded,
-		Path:   "/",
-		Domain: handler.domainName,
+		Name:  handler.cookieName,
+		Value: encoded,
+	}
+	if handler.domainName != "localhost" {
+		cookie.Path = "/"
+		cookie.Domain = handler.domainName
+		cookie.Secure = true
+		cookie.HttpOnly = true
 	}
 	return cookie, strToken, nil
 }

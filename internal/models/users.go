@@ -26,13 +26,13 @@ func CreateUser(db *gorm.DB, user *User) error {
 }
 
 //GetUser get a single user record
-func GetUser(db *gorm.DB, username string) (User, error) {
+func GetUser(db *gorm.DB, username string) (*User, error) {
 	var user User
 
 	if db.Where("username = ?", username).First(&user).RecordNotFound() {
-		return user, errors.New("record not found")
+		return nil, errors.New("record not found")
 	}
-	return user, nil
+	return &user, nil
 }
 
 //UpdateUser update an existing user

@@ -9,6 +9,8 @@ Authentication server in Go created mainly for forward authentication
 
 ## Features
 
+ - Session ID data stored in cookies
+ - Using secure configuration for cookies to prevent CSRF or any other attacks
  - Use external Postgres DB for user data managing
  - Forward headers
  
@@ -21,6 +23,8 @@ Authentication server in Go created mainly for forward authentication
 **POST /auth/approve**  approve existing user registration using the approval token provided during the signin
 
 **GET  /auth/validate** validate current cookie and return status 200 if everything is ok
+
+**GET  /auth/me** get logged-in user data, otherwise 403 is returned
  
  # Environment Varaiables
 
@@ -34,6 +38,12 @@ Authentication server in Go created mainly for forward authentication
  
  **DOMAIN_NAME** (default 'localhost') required to make cookies available across any services under the same domain
 
+ # Secure Configuration for Cookies
+ 
+  - Cookies attached to a specific domain or subdomain only
+  - HTTPS support only through 'Secure' property
+  - Mitigate XSS attack using 'HttpOnly' property
+ 
 ## Build Docker Image
 
 No extra parameters are required for the docker image, so just run:
@@ -42,5 +52,10 @@ No extra parameters are required for the docker image, so just run:
 
 ## Run Docker Container
 
-TBD
+`docker-compose.yml` is available as a sample to deploy a stack
+ with Guardian and a Postgres DB
+ 
+ `docker-compose.traefik.yml` is also available with Traefik used as a reverse proxy
+ 
+ Run `docker-compose -f docker-compose.yml up -d`
 

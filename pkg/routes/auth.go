@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -57,10 +58,11 @@ func NewAuth(_db *gorm.DB, _logger *log.Logger) *Auth {
 //AddRoutes add all routers related to the users
 func (a *Auth) AddRoutes(router *mux.Router) {
 	a.logger.Print("adding auth routes...")
-	router.HandleFunc("/login", a.authenticateHandler).Methods("POST")
+	router.HandleFunc("/login", a.authenticateHandler).Methods(http.MethodPost)
 	router.HandleFunc("/validate", a.validateHandler)
-	router.HandleFunc("/signin", a.signinHandler).Methods("POST")
-	router.HandleFunc("/approve", a.approveHandler).Methods("POST")
+	router.HandleFunc("/signin", a.signinHandler).Methods(http.MethodPost)
+	router.HandleFunc("/approve", a.approveHandler).Methods(http.MethodPost)
+	router.HandleFunc("/me", a.getMeHandler).Methods(http.MethodGet)
 }
 
 func (a *Auth) getTokenExpirationTime() time.Duration {
@@ -153,7 +155,7 @@ func (a *Auth) authenticateHandler(w http.ResponseWriter, req *http.Request) {
 
 	// update token in user db record
 	dbUser.Token = token
-	err = models.UpdateUser(a.db, &dbUser)
+	err = models.UpdateUser(a.db, dbUser)
 	if err != nil {
 		fmt.Println("can't update user", err)
 		a.redirect(w, req, errors.New("can't update user"))
@@ -194,7 +196,7 @@ func (a *Auth) approveHandler(w http.ResponseWriter, req *http.Request) {
 
 	// mark user as approved
 	dbUser.Approved = true
-	err = models.UpdateUser(a.db, &dbUser)
+	err = models.UpdateUser(a.db, dbUser)
 	if err != nil {
 		fmt.Println("can't update user", err)
 		a.redirect(w, req, errors.New("can't update user"))
@@ -268,6 +270,40 @@ func (a *Auth) validateHandler(w http.ResponseWriter, req *http.Request) {
 	//all good
 	w.Header().Set("X-Forwarded-User", dbUser.Username)
 	w.WriteHeader(http.StatusOK)
+}
+
+func (a *Auth) getMeHandler(w http.ResponseWriter, req *http.Request) {
+	// get cookie & token
+	_, jwtToken, err := a.authHandler.ReadCookie(req)
+	if err != nil {
+		fmt.Println("cookie not found")
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	if jwtToken.Token == nil || !jwtToken.Token.Valid {
+		fmt.Println("invalid token")
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	sessionUser, err := jwtToken.GetUser()
+	if err != nil {
+		fmt.Println("unable to get sessionUser for given token")
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	//get user data from db to confirm the token was assigned to this user
+	dbUser, err := models.GetUser(a.db, sessionUser.Username)
+	if err != nil {
+		fmt.Println("unable to get user from DB, username:", sessionUser.Username)
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+	data, _ := json.Marshal(dbUser)
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
 }
 
 func getDomainName() string {

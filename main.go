@@ -36,7 +36,19 @@ func main() {
 	router.Use(loggingMiddleware)
 	router.NotFoundHandler = http.HandlerFunc(notFound)
 
-	handler := cors.Default().Handler(router)
+	handler := cors.New(cors.Options{
+		AllowedOrigins: []string{"http://localhost:3000"},
+		AllowedMethods: []string{
+			http.MethodHead,
+			http.MethodGet,
+			http.MethodPost,
+			http.MethodPut,
+			http.MethodPatch,
+			http.MethodDelete,
+		},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	}).Handler(router)
 
 	port := 8080
 	logger.Printf("initialization ready. server running at http://localhost:%d", port)

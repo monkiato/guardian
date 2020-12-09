@@ -79,7 +79,7 @@ func (handler *Handler) CreateCookie(user *models.SessionUser, expirationTime in
 	if handler.domainName != "localhost" {
 		cookie.Path = "/"
 		cookie.Domain = handler.domainName
-		cookie.Secure = true
+		cookie.Secure = false
 		cookie.HttpOnly = true
 	}
 	return cookie, strToken, nil

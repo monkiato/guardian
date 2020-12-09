@@ -275,15 +275,8 @@ func (a *Auth) validateHandler(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	token, err := jwtToken.ToString()
-	if err != nil {
-		fmt.Println("unable to obtain token as a string")
-		a.redirect(w, req, err)
-		return
-	}
-
-	if !dbUser.Approved || dbUser.Token != token {
-		fmt.Println("User not approved or mismatched token")
+	if !dbUser.Approved {
+		fmt.Printf("User not approved. a: %t", dbUser.Approved)
 		a.redirect(w, req, errors.New("User not approved or mismatched token"))
 		return
 	}
